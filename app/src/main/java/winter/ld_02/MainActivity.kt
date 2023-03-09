@@ -3,6 +3,7 @@ package winter.ld_02
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,12 +14,15 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.sharp.FavoriteBorder
 import androidx.compose.material.icons.sharp.KeyboardArrowDown
 import androidx.compose.material.icons.sharp.KeyboardArrowUp
+import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +55,7 @@ fun MovieRow(movie: Movie) {
 
     var isOpened by remember { mutableStateOf(Icons.Sharp.KeyboardArrowUp) }
     var isLiked by remember { mutableStateOf(Icons.Sharp.FavoriteBorder) }
+    val isVisible by remember { mutableStateOf(false) }
 
 //    var isOpenend = mutableStateOf(Icons.Sharp.KeyboardArrowDown)
 
@@ -70,7 +75,7 @@ fun MovieRow(movie: Movie) {
                         .fillMaxWidth(),
                     contentScale = ContentScale.FillWidth
                 )
-                Icon (
+                Icon(
                     isLiked,
                     contentDescription = "Favorite Icon",
                     modifier = Modifier
@@ -91,6 +96,7 @@ fun MovieRow(movie: Movie) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                displayMovieInfo(movieInfo = movie, visible = mutableStateOf(false)) //TODO: Fix this
                 Text(text = movie.title, fontSize = 20.sp)
                 Icon(
                     imageVector = isOpened,
@@ -99,7 +105,7 @@ fun MovieRow(movie: Movie) {
                         .clickable {
                             isOpened = if (isOpened == Icons.Sharp.KeyboardArrowUp)
                                 Icons.Sharp.KeyboardArrowDown
-                                else Icons.Sharp.KeyboardArrowUp
+                            else Icons.Sharp.KeyboardArrowUp
                         }
                 )
             }
@@ -117,20 +123,66 @@ fun MovieList(movieList: List<Movie>) {
 }
 
 @Composable
+fun displayMovieInfo(movieInfo: Movie, visible: MutableState<Boolean>) {
+    AnimatedVisibility(
+        visible = visible.value,
+        enter = slideInVertically(
+            initialOffsetY = { -40 }
+        ) + expandVertically(
+                expandFrom = Alignment.Top
+        ),
+        exit = slideOutVertically() + shrinkVertically()
+    ) {
+        Text("Rawr",
+            Modifier
+                .fillMaxWidth()
+                .requiredHeight(200.dp))
+    }
+
+}
+
+@Composable
 fun TopBar() {
+
+    var content = remember {
+        mutableStateOf("Select menu to change content")
+    }
+
     TopAppBar(
-        title = {
-            Text("Movie List")
-        },
-        navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon (
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = null
-                )
-            }
+        title = { Text("Movie List") },
+        actions = {
+            TopAppBarDropdownMenu(content)
         }
     )
+}
+
+@Composable
+fun TopAppBarDropdownMenu(content: MutableState<String>) {
+    val expanded = remember { mutableStateOf(false) }
+
+    Box(
+        Modifier.wrapContentSize(Alignment.TopEnd)
+    ) {
+        IconButton(onClick = {
+            expanded.value = true
+            content.value = "Menu Opening"
+        }) {
+            Icon(
+                Icons.Filled.MoreVert,
+                contentDescription = null
+            )
+        }
+    }
+
+    DropdownMenu(
+        expanded = expanded.value,
+        onDismissRequest = { expanded.value = false }
+    ) {
+        DropdownMenuItem(onClick = { expanded.value = false
+            content.value = "First Item selected" }) {
+            Text("First Item")
+        }
+    }
 }
 
 @Preview(showBackground = true)
