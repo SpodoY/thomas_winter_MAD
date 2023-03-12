@@ -32,5 +32,11 @@ fun MyNavigation(
 //            Log.d("MovieItem", it.arguments?.getString(MOVIE_KEY).toString())
             MovieScreen(navController = navController, it.arguments?.getString(MOVIE_KEY).toString())
         }
+
+        composable(
+            route = Screen.Favorites.route,
+        ) {
+            FavoriteScreen(navController = navController)
+        }
     }
 }

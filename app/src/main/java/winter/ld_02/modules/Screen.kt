@@ -14,4 +14,6 @@ sealed class Screen(val route: String) {
             return getMovies().filter { it.id == id }[0]
         }
     }
+
+    object Favorites: Screen(route = "favorites")
 }

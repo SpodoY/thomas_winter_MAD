@@ -35,7 +35,7 @@ fun HomeScreen(
     navController: NavController
 ) {
     Column {
-        TopBar()
+        TopBar(navController)
         MovieList(
             movieList = getMovies(),
             navController = navController
@@ -141,7 +141,7 @@ fun MovieList(movieList: List<Movie>, navController: NavController) {
 }
 
 @Composable
-fun TopAppBarDropdownMenu(content: MutableState<String>) {
+fun TopAppBarDropdownMenu(content: MutableState<String>, navController: NavController) {
     val expanded = remember { mutableStateOf(false) }
 
     Box(
@@ -166,7 +166,10 @@ fun TopAppBarDropdownMenu(content: MutableState<String>) {
             expanded.value = false
             content.value = "Go to favroites"
         }) {
-            Row() {
+            Row(
+                modifier = Modifier
+                    .clickable { navController.navigate(route = Screen.Favorites.route) }
+            ) {
                 Icon(
                     Icons.Sharp.Favorite,
                     contentDescription = null,
@@ -179,7 +182,7 @@ fun TopAppBarDropdownMenu(content: MutableState<String>) {
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(navController: NavController) {
     var content = remember {
         mutableStateOf("Select menu to change content")
     }
@@ -187,7 +190,7 @@ fun TopBar() {
     TopAppBar(
         title = { Text("Movie List") },
         actions = {
-            TopAppBarDropdownMenu(content)
+            TopAppBarDropdownMenu(content, navController)
         }
     )
 }
