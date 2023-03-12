@@ -1,6 +1,5 @@
 package winter.ld_02
 
-import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -30,7 +29,6 @@ import coil.compose.rememberAsyncImagePainter
 import winter.ld_02.modules.Movie
 import winter.ld_02.modules.Screen
 import winter.ld_02.modules.getMovies
-import winter.ld_02.ui.theme.LD_02Theme
 
 @Composable
 fun HomeScreen(
@@ -46,7 +44,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun MovieItem(movie: Movie, navController: NavController, onItemClick: (String) -> Unit, ) {
+fun MovieItem(movie: Movie, navController: NavController, onItemClick: ((String) -> Unit) = {}) {
     var isOpened by remember { mutableStateOf(Icons.Sharp.KeyboardArrowUp) }
     var isLiked by remember { mutableStateOf(Icons.Sharp.FavoriteBorder) }
     var isVisible by remember { mutableStateOf(false) }
@@ -136,7 +134,7 @@ fun MovieList(movieList: List<Movie>, navController: NavController) {
     LazyColumn() {
         items(movieList) { movie ->
             MovieItem(movie, navController) { movieId ->
-                navController.navigate(route = Screen.Movie.passId(movieId))
+                navController.navigate(route = Screen.MovieDetail.passId(movieId))
             }
         }
     }

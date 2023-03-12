@@ -1,6 +1,5 @@
 package winter.ld_02
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -25,7 +24,7 @@ fun MyNavigation(
         }
 
         composable(
-            route = Screen.Movie.route,
+            route = Screen.MovieDetail.route,
             arguments = listOf(navArgument(MOVIE_KEY) {
                 type = NavType.StringType
             })
