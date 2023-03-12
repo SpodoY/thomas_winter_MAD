@@ -1,17 +1,19 @@
-package winter.ld_02
+package winter.ld_02.modules
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.sharp.Favorite
 import androidx.compose.material.icons.sharp.FavoriteBorder
 import androidx.compose.material.icons.sharp.KeyboardArrowDown
 import androidx.compose.material.icons.sharp.KeyboardArrowUp
@@ -20,31 +22,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import winter.ld_02.modules.Movie
-import winter.ld_02.modules.Screen
-import winter.ld_02.modules.getMovies
+import winter.ld_02.navigation.Screen
+
+
 
 @Composable
-fun HomeScreen(
-    navController: NavController
-) {
-    Column {
-        TopBar(navController)
-        MovieList(
-            movieList = getMovies(),
-            navController = navController
-        )
+fun MovieList(movieList: List<Movie>, navController: NavController, ) {
+    LazyColumn() {
+        items(movieList) { movie ->
+            MovieItem(movie) { movieId ->
+                navController.navigate(route = Screen.MovieDetail.passId(movieId))
+            }
+        }
     }
 }
 
 @Composable
-fun MovieItem(movie: Movie, navController: NavController, onItemClick: ((String) -> Unit) = {}) {
+fun MovieItem(movie: Movie, onItemClick: (String) -> Unit = {}) {
     var isOpened by remember { mutableStateOf(Icons.Sharp.KeyboardArrowUp) }
     var isLiked by remember { mutableStateOf(Icons.Sharp.FavoriteBorder) }
     var isVisible by remember { mutableStateOf(false) }
@@ -130,75 +129,29 @@ fun MovieItem(movie: Movie, navController: NavController, onItemClick: ((String)
 }
 
 @Composable
-fun MovieList(movieList: List<Movie>, navController: NavController) {
-    LazyColumn() {
-        items(movieList) { movie ->
-            MovieItem(movie, navController) { movieId ->
-                navController.navigate(route = Screen.MovieDetail.passId(movieId))
-            }
-        }
-    }
-}
-
-@Composable
-fun TopAppBarDropdownMenu(content: MutableState<String>, navController: NavController) {
-    val expanded = remember { mutableStateOf(false) }
-
-    Box(
-        Modifier.wrapContentSize(Alignment.TopEnd)
-    ) {
-        IconButton(onClick = {
-            expanded.value = true
-            content.value = "Menu Opening"
-        }) {
-            Icon(
-                Icons.Filled.MoreVert,
-                contentDescription = null
-            )
-        }
-    }
-
-    DropdownMenu(
-        expanded = expanded.value,
-        onDismissRequest = { expanded.value = false }
-    ) {
-        DropdownMenuItem(onClick = {
-            expanded.value = false
-            content.value = "Go to favroites"
-        }) {
-            Row(
-                modifier = Modifier
-                    .clickable { navController.navigate(route = Screen.Favorites.route) }
-            ) {
-                Icon(
-                    Icons.Sharp.Favorite,
-                    contentDescription = null,
-                    modifier = Modifier.padding(horizontal = 3.dp)
+fun MovieCarousel(movieList: List<String>) {
+    Column() {
+        Text("Movie Images",
+            fontSize = 25.sp,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
+        )
+        LazyRow(
+            Modifier.height(300.dp)
+        ) {
+            items(movieList) {
+                val painter = rememberAsyncImagePainter(model = it)
+                Image(
+                    painter = painter,
+                    contentDescription = "Movie Picture",
+                    modifier = Modifier
+                        .width(350.dp) //If you remove this, it breaks... idk why, idk how but it does
+                        .fillMaxHeight()
+                        .padding(horizontal = 15.dp),
+                    contentScale = ContentScale.FillHeight
                 )
-                Text("Favorites")
             }
         }
     }
-}
-
-@Composable
-fun TopBar(navController: NavController) {
-    var content = remember {
-        mutableStateOf("Select menu to change content")
-    }
-
-    TopAppBar(
-        title = { Text("Movie List") },
-        actions = {
-            TopAppBarDropdownMenu(content, navController)
-        }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    HomeScreen(
-        navController = rememberNavController()
-    )
 }

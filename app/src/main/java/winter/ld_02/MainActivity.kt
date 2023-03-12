@@ -8,7 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import winter.ld_02.ui.theme.LD_02Theme
+import winter.ld_02.navigation.MyNavigation
 
 class MainActivity : ComponentActivity() {
 

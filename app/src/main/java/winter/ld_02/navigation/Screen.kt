@@ -1,4 +1,7 @@
-package winter.ld_02.modules
+package winter.ld_02.navigation
+
+import winter.ld_02.modules.Movie
+import winter.ld_02.modules.getMovies
 
 const val MOVIE_KEY = "id"
 
