@@ -1,4 +1,6 @@
-package com.example.movieappmad23.models
+package com.example.movieappmad23.data
+
+import com.example.movieappmad23.models.Genre
 
 data class Movie(
     val id: String,

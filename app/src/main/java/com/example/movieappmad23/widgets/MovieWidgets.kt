@@ -30,8 +30,8 @@ import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.example.movieappmad23.R
-import com.example.movieappmad23.models.Movie
-import com.example.movieappmad23.models.getMovies
+import com.example.movieappmad23.data.Movie
+import com.example.movieappmad23.data.getMovies
 import com.example.movieappmad23.ui.theme.Shapes
 
 @Preview
