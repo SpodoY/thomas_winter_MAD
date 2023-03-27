@@ -1,5 +1,6 @@
 package com.example.movieappmad23.widgets
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,10 +13,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.sharp.Favorite
+import androidx.compose.material.icons.sharp.FavoriteBorder
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -36,11 +41,13 @@ import com.example.movieappmad23.ui.theme.Shapes
 
 @Preview
 @Composable
-fun MovieRow(
-    movie: Movie = getMovies()[0],
+fun MovieItem(
     modifier: Modifier = Modifier,
-    onItemClick: (String) -> Unit = {}
+    movie: Movie = getMovies()[0],
+    onItemClick: (String) -> Unit = {},
+    onFavClick: (Movie) -> Unit = {}
 ) {
+    val isLiked by rememberSaveable {mutableStateOf(movie.isFavorite)}
     Card(modifier = modifier
         .clickable {
             onItemClick(movie.id)
@@ -57,7 +64,7 @@ fun MovieRow(
                 contentAlignment = Alignment.Center
             ) {
                 MovieImage(imageUrl = movie.images[0])
-                FavoriteIcon()
+                FavoriteIcon(onFavClick, movie, isLiked)
             }
 
             MovieDetails(modifier = Modifier.padding(12.dp), movie = movie)
@@ -83,16 +90,21 @@ fun MovieImage(imageUrl: String) {
 }
 
 @Composable
-fun FavoriteIcon() {
+fun FavoriteIcon(onFavClick: (Movie) -> Unit, movie: Movie, isLiked: Boolean) {
     Box(modifier = Modifier
         .fillMaxSize()
         .padding(10.dp),
         contentAlignment = Alignment.TopEnd
     ){
         Icon(
-            tint = MaterialTheme.colors.secondary,
-            imageVector = Icons.Default.FavoriteBorder,
-            contentDescription = "Add to favorites")
+            tint = MaterialTheme.colors.error,
+            imageVector = if (isLiked) {Icons.Sharp.Favorite} else (Icons.Sharp.FavoriteBorder),
+            contentDescription = "Add to favorites",
+            modifier = Modifier
+                .clickable {
+                    onFavClick(movie)
+               },
+        )
     }
 }
 
