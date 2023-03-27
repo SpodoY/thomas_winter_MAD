@@ -17,10 +17,11 @@ import com.example.movieappmad23.widgets.SimpleTopAppBar
 fun DetailScreen(
     navController: NavController,
     moviesViewModel: MoviesViewModel,
-    movieId:String?){
+    movieId:String?
+) {
 
     movieId?.let {
-        val movie = moviesViewModel.getAllMovies().filter { it.id == movieId }[0]
+        val movie = moviesViewModel.loadAllMovies().filter { it.id == movieId }[0]
         // needed for show/hide snackbar
         val scaffoldState = rememberScaffoldState() // this contains the `SnackbarHostState`
 

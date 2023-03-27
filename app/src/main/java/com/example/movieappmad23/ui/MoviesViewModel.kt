@@ -1,29 +1,30 @@
 package com.example.movieappmad23.ui
 
+import android.util.Log
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import com.example.movieappmad23.data.FavoriteUiState
 import com.example.movieappmad23.data.Movie
+import com.example.movieappmad23.data.getMovies
 import com.example.movieappmad23.models.Genre
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 class MoviesViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(FavoriteUiState())
-    val uiState : StateFlow<FavoriteUiState> = _uiState.asStateFlow()
+    private val _allMovies = getMovies().toMutableStateList()
+    val allMovies: MutableList<Movie>
+        get() = _allMovies
+
+    private val _favoriteMovies = mutableListOf<Movie>()
+    val favoriteMovies: MutableList<Movie>
+        get() = _favoriteMovies
 
     fun toggleFavorite(movie: Movie) {
-        _uiState.update {curState ->
-            movie.isFavorite = movie.isFavorite.not()
-            val favorites = curState.favoriteMovies.toMutableList()
-            if (movie.isFavorite) { favorites.add(movie)}
-            else { favorites.remove(movie) }
+        val index = _allMovies.indexOf(movie)
+        _allMovies[index].isFavorite = _allMovies[index].isFavorite.not()
 
-            curState.copy(
-                favoriteMovies = favorites.toList()
-            )
+        if (_allMovies[index].isFavorite) {
+            _favoriteMovies.add(movie)
+        } else {
+            _favoriteMovies.remove(movie)
         }
     }
     fun addMovie(
@@ -46,20 +47,28 @@ class MoviesViewModel : ViewModel() {
             rating = rating.toFloat(),
             images = listOf("NoImages")
         )
-        _uiState.update { curState ->
-            val movies = curState.allMovies.toMutableList()
-            movies.add(newMovie)
-            curState.copy(
-                allMovies = movies.toList()
-            )
-        }
+        _allMovies.add(newMovie)
 
     }
-    fun getAllMovies(): List<Movie> {
-        return _uiState.value.allMovies
+    fun loadAllMovies(): List<Movie> {
+        return _allMovies
     }
 
     fun getAllFavorites(): List<Movie> {
-        return _uiState.value.favoriteMovies
+        return _favoriteMovies
+    }
+
+    fun stringNotEmpty(item: String): Boolean {
+        Log.d("STRING_EMPTY", item.length.toString())
+        return item.isNotEmpty()
+    }
+
+    fun floatNotEmpty(item: String): Boolean {
+//        return item.isNaN().not()
+        return true
+    }
+
+    fun <T> listNotEmpty(items: List<T>): Boolean {
+        return items.isNotEmpty()
     }
 }

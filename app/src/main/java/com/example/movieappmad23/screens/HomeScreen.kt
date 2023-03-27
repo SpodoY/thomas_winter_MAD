@@ -1,6 +1,5 @@
 package com.example.movieappmad23.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,8 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,8 +26,6 @@ fun HomeScreen(
     navController: NavController = rememberNavController(),
     moviesViewModel: MoviesViewModel = viewModel()
 ) {
-    val favoriteUiState by moviesViewModel.uiState.collectAsState()
-
     Scaffold(topBar = {
         HomeTopAppBar(
             title = "Home",
@@ -64,7 +60,7 @@ fun HomeScreen(
 fun MainContent(
     modifier: Modifier,
     navController: NavController,
-    moviesViewModel: MoviesViewModel
+    moviesViewModel: MoviesViewModel = viewModel()
 ) {
     MovieList(
         modifier = modifier,
@@ -84,7 +80,7 @@ fun MovieList(
         contentPadding = PaddingValues(all = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        items(moviesViewModel.getAllMovies()) { movie ->
+        items(moviesViewModel.allMovies) { movie ->
             MovieItem(
                 movie = movie,
                 onItemClick = { movieId ->

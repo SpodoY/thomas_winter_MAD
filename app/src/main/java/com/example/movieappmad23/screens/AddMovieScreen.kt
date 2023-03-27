@@ -57,14 +57,8 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
             horizontalAlignment = Alignment.Start
         ) {
 
-            var title by remember {
-                mutableStateOf("")
-            }
-
-            var year by remember {
-                mutableStateOf("")
-            }
-
+            var title by remember { mutableStateOf("") }
+            var year by remember { mutableStateOf("") }
             val genres = Genre.values().toList()
 
             var genreItems by remember {
@@ -78,25 +72,15 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 )
             }
 
-            var director by remember {
-                mutableStateOf("")
-            }
+            var director by remember { mutableStateOf("") }
 
-            var actors by remember {
-                mutableStateOf("")
-            }
+            var actors by remember { mutableStateOf("") }
 
-            var plot by remember {
-                mutableStateOf("")
-            }
+            var plot by remember { mutableStateOf("") }
 
-            var rating by remember {
-                mutableStateOf("")
-            }
+            var rating by remember { mutableStateOf("") }
 
-            var isEnabledSaveButton by remember {
-                mutableStateOf(true)
-            }
+            var isEnabledSaveButton by remember { mutableStateOf(true) }
 
             OutlinedTextField(
                 value = title,
@@ -104,7 +88,7 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { title = it },
                 label = { Text(text = stringResource(R.string.enter_movie_title)) },
-                isError = false
+                isError = moviesViewModel.stringNotEmpty(title)
             )
 
             OutlinedTextField(
@@ -113,7 +97,7 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { year = it },
                 label = { Text(stringResource(R.string.enter_movie_year)) },
-                isError = false
+                isError = moviesViewModel.stringNotEmpty(year)
             )
 
             Text(
@@ -155,7 +139,7 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { director = it },
                 label = { Text(stringResource(R.string.enter_director)) },
-                isError = false
+                isError = moviesViewModel.stringNotEmpty(director)
             )
 
             OutlinedTextField(
@@ -163,7 +147,7 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { actors = it },
                 label = { Text(stringResource(R.string.enter_actors)) },
-                isError = false
+                isError = moviesViewModel.stringNotEmpty(actors)
             )
 
             OutlinedTextField(
@@ -174,7 +158,7 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                     .height(120.dp),
                 onValueChange = { plot = it },
                 label = { Text(textAlign = TextAlign.Start, text = stringResource(R.string.enter_plot)) },
-                isError = false
+                isError = moviesViewModel.stringNotEmpty(plot)
             )
 
             OutlinedTextField(
@@ -189,11 +173,11 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                                 }
                 },
                 label = { Text(stringResource(R.string.enter_rating)) },
-                isError = false
+                isError = moviesViewModel.floatNotEmpty(rating)
             )
 
             Button(
-                enabled = isEnabledSaveButton,
+                enabled = isEnabledSaveButton, //TODO: Disable as long as input is wrong
                 onClick = { moviesViewModel.addMovie(title, year, genres, director, actors, plot, rating) }) {
                 Text(text = stringResource(R.string.add))
             }

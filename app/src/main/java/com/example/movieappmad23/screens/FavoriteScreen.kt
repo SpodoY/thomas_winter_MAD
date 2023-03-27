@@ -23,7 +23,7 @@ fun FavoriteScreen(navController: NavController, moviesViewModel: MoviesViewMode
 
         Column(modifier = Modifier.padding(padding)) {
             LazyColumn {
-                items(moviesViewModel.getAllFavorites()){ movie ->
+                items(moviesViewModel.favoriteMovies){ movie ->
                     MovieItem(
                         movie = movie,
                         onItemClick = { movieId ->
