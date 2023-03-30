@@ -1,6 +1,5 @@
 package com.example.movieappmad23.ui
 
-import android.util.Log
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import com.example.movieappmad23.data.Movie
@@ -10,21 +9,21 @@ import com.example.movieappmad23.models.Genre
 class MoviesViewModel : ViewModel() {
 
     private val _allMovies = getMovies().toMutableStateList()
-    val allMovies: MutableList<Movie>
+    val allMovies: List<Movie>
         get() = _allMovies
 
-    private val _favoriteMovies = mutableListOf<Movie>()
-    val favoriteMovies: MutableList<Movie>
+    private val _favoriteMovies = mutableListOf<Movie>().toMutableStateList()
+    val favoriteMovies: List<Movie>
         get() = _favoriteMovies
 
     fun toggleFavorite(movie: Movie) {
-        val index = _allMovies.indexOf(movie)
-        _allMovies[index].isFavorite = _allMovies[index].isFavorite.not()
-
-        if (_allMovies[index].isFavorite) {
-            _favoriteMovies.add(movie)
-        } else {
-            _favoriteMovies.remove(movie)
+        _allMovies.find { it.id == movie.id }?.let { task ->
+            task.isFavorite = !task.isFavorite
+            if (task.isFavorite) {
+                _favoriteMovies.add(movie)
+            } else {
+                _favoriteMovies.remove(movie)
+            }
         }
     }
     fun addMovie(
@@ -59,8 +58,7 @@ class MoviesViewModel : ViewModel() {
     }
 
     fun stringNotEmpty(item: String): Boolean {
-        Log.d("STRING_EMPTY", item.length.toString())
-        return item.isNotEmpty()
+        return item.isEmpty()
     }
 
     fun floatNotEmpty(item: String): Boolean {
@@ -69,6 +67,6 @@ class MoviesViewModel : ViewModel() {
     }
 
     fun <T> listNotEmpty(items: List<T>): Boolean {
-        return items.isNotEmpty()
+        return items.isEmpty()
     }
 }

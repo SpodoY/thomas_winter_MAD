@@ -57,6 +57,7 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
             horizontalAlignment = Alignment.Start
         ) {
 
+            //TODO: To View Model
             var title by remember { mutableStateOf("") }
             var year by remember { mutableStateOf("") }
             val genres = Genre.values().toList()
@@ -87,7 +88,7 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { title = it },
-                label = { Text(text = stringResource(R.string.enter_movie_title)) },
+                label = { Text(stringResource(R.string.enter_movie_title)) },
                 isError = moviesViewModel.stringNotEmpty(title)
             )
 
@@ -183,4 +184,9 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
             }
         }
     }
+}
+
+@Composable
+fun displayLabelText(errorState: Boolean, successTxt: String) {
+    if (errorState) Text(stringResource(R.string.wrong_input)) else Text(successTxt)
 }

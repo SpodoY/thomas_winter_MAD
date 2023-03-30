@@ -38,13 +38,12 @@ import com.example.movieappmad23.ui.theme.Shapes
 
 @Preview
 @Composable
-fun MovieItem(
+fun MovieItem (
     modifier: Modifier = Modifier,
     movie: Movie = getMovies()[0],
     onItemClick: (String) -> Unit = {},
     onFavClick: (Movie) -> Unit = {}
 ) {
-    val isLiked by rememberSaveable {mutableStateOf(movie.isFavorite)}
     Card(modifier = modifier
         .clickable {
             onItemClick(movie.id)
@@ -61,7 +60,7 @@ fun MovieItem(
                 contentAlignment = Alignment.Center
             ) {
                 MovieImage(imageUrl = movie.images[0])
-                FavoriteIcon(onFavClick, movie, isLiked)
+                FavoriteIcon(onFavClick, movie)
             }
 
             MovieDetails(modifier = Modifier.padding(12.dp), movie = movie)
@@ -85,7 +84,8 @@ fun MovieImage(imageUrl: String) {
 }
 
 @Composable
-fun FavoriteIcon(onFavClick: (Movie) -> Unit, movie: Movie, isLiked: Boolean) {
+fun FavoriteIcon(onFavClick: (Movie) -> Unit, movie: Movie) {
+
     Box(modifier = Modifier
         .fillMaxSize()
         .padding(10.dp),
@@ -93,7 +93,7 @@ fun FavoriteIcon(onFavClick: (Movie) -> Unit, movie: Movie, isLiked: Boolean) {
     ){
         Icon(
             tint = MaterialTheme.colors.error,
-            imageVector = if (isLiked) {Icons.Sharp.Favorite} else (Icons.Sharp.FavoriteBorder),
+            imageVector = if (movie.isFavorite) {Icons.Sharp.Favorite} else (Icons.Sharp.FavoriteBorder),
             contentDescription = "Add to favorites",
             modifier = Modifier
                 .clickable {
@@ -107,9 +107,7 @@ fun FavoriteIcon(onFavClick: (Movie) -> Unit, movie: Movie, isLiked: Boolean) {
 @Composable
 fun MovieDetails(modifier: Modifier = Modifier, movie: Movie) {
 
-    var expanded by remember {
-        mutableStateOf(false)
-    }
+    var expanded by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier.fillMaxWidth(),
