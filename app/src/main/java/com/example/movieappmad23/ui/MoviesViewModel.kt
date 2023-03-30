@@ -1,10 +1,13 @@
 package com.example.movieappmad23.ui
 
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.*
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.ViewModel
+import com.example.movieappmad23.R
 import com.example.movieappmad23.data.Movie
 import com.example.movieappmad23.data.getMovies
 import com.example.movieappmad23.models.Genre
+import com.example.movieappmad23.models.ListItemSelectable
 
 class MoviesViewModel : ViewModel() {
 
@@ -15,6 +18,14 @@ class MoviesViewModel : ViewModel() {
     private val _favoriteMovies = mutableListOf<Movie>().toMutableStateList()
     val favoriteMovies: List<Movie>
         get() = _favoriteMovies
+
+    var title = mutableStateOf("")
+    val year =  mutableStateOf("")
+    var director = mutableStateOf("")
+    var actors = mutableStateOf("")
+    var plot = mutableStateOf("")
+    var rating = mutableStateOf("")
+    var isEnabledSaveButton = mutableStateOf(true)
 
     fun toggleFavorite(movie: Movie) {
         _allMovies.find { it.id == movie.id }?.let { task ->
@@ -43,18 +54,12 @@ class MoviesViewModel : ViewModel() {
             director = director,
             actors = actors,
             plot = plot,
-            rating = rating.toFloat(),
-            images = listOf("NoImages")
+            rating = rating.toFloat(), images = listOf(
+                "https://kinderzeitung.kleinezeitung.at/wp-content/uploads/2022/06/adobestock_173371622min-1140x662.jpg",
+            )
         )
         _allMovies.add(newMovie)
 
-    }
-    fun loadAllMovies(): List<Movie> {
-        return _allMovies
-    }
-
-    fun getAllFavorites(): List<Movie> {
-        return _favoriteMovies
     }
 
     fun stringNotEmpty(item: String): Boolean {
@@ -62,8 +67,8 @@ class MoviesViewModel : ViewModel() {
     }
 
     fun floatNotEmpty(item: String): Boolean {
-//        return item.isNaN().not()
-        return true
+        item.toFloatOrNull() ?: return item.isEmpty()
+        return item.isEmpty()
     }
 
     fun <T> listNotEmpty(items: List<T>): Boolean {

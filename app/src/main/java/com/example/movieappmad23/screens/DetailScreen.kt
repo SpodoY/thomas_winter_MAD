@@ -21,7 +21,7 @@ fun DetailScreen(
 ) {
 
     movieId?.let {
-        val movie = moviesViewModel.loadAllMovies().filter { it.id == movieId }[0]
+        val movie = moviesViewModel.allMovies.filter { it.id == movieId }[0]
         // needed for show/hide snackbar
         val scaffoldState = rememberScaffoldState() // this contains the `SnackbarHostState`
 

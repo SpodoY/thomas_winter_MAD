@@ -1,5 +1,6 @@
 package com.example.movieappmad23.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -14,6 +15,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movieappmad23.R
 import com.example.movieappmad23.models.Genre
@@ -57,11 +59,7 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
             horizontalAlignment = Alignment.Start
         ) {
 
-            //TODO: To View Model
-            var title by remember { mutableStateOf("") }
-            var year by remember { mutableStateOf("") }
             val genres = Genre.values().toList()
-
             var genreItems by remember {
                 mutableStateOf(
                     genres.map { genre ->
@@ -73,32 +71,22 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 )
             }
 
-            var director by remember { mutableStateOf("") }
-
-            var actors by remember { mutableStateOf("") }
-
-            var plot by remember { mutableStateOf("") }
-
-            var rating by remember { mutableStateOf("") }
-
-            var isEnabledSaveButton by remember { mutableStateOf(true) }
-
             OutlinedTextField(
-                value = title,
+                value = moviesViewModel.title.value,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = { title = it },
+                onValueChange = { moviesViewModel.title.value = it },
                 label = { Text(stringResource(R.string.enter_movie_title)) },
-                isError = moviesViewModel.stringNotEmpty(title)
+                isError = moviesViewModel.stringNotEmpty(moviesViewModel.title.value)
             )
 
             OutlinedTextField(
-                value = year,
+                value = moviesViewModel.year.value,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = { year = it },
+                onValueChange = { moviesViewModel.year.value = it },
                 label = { Text(stringResource(R.string.enter_movie_year)) },
-                isError = moviesViewModel.stringNotEmpty(year)
+                isError = moviesViewModel.stringNotEmpty(moviesViewModel.year.value)
             )
 
             Text(
@@ -135,51 +123,64 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
             }
 
             OutlinedTextField(
-                value = director,
+                value = moviesViewModel.director.value,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = { director = it },
+                onValueChange = { moviesViewModel.director.value = it },
                 label = { Text(stringResource(R.string.enter_director)) },
-                isError = moviesViewModel.stringNotEmpty(director)
+                isError = moviesViewModel.stringNotEmpty(moviesViewModel.director.value)
             )
 
             OutlinedTextField(
-                value = actors,
+                value = moviesViewModel.actors.value,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = { actors = it },
+                onValueChange = { moviesViewModel.actors.value = it },
                 label = { Text(stringResource(R.string.enter_actors)) },
-                isError = moviesViewModel.stringNotEmpty(actors)
+                isError = moviesViewModel.stringNotEmpty(moviesViewModel.actors.value)
             )
 
             OutlinedTextField(
-                value = plot,
+                value = moviesViewModel.plot.value,
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
-                onValueChange = { plot = it },
+                onValueChange = { moviesViewModel.plot.value = it },
                 label = { Text(textAlign = TextAlign.Start, text = stringResource(R.string.enter_plot)) },
-                isError = moviesViewModel.stringNotEmpty(plot)
+                isError = moviesViewModel.stringNotEmpty(moviesViewModel.plot.value)
             )
 
             OutlinedTextField(
-                value = rating,
+                value = moviesViewModel.rating.value,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = {
-                                rating = if(it.startsWith("0")) {
+                            moviesViewModel.rating.value = if(it.startsWith("0")) {
                                     ""
                                 } else {
                                     it
                                 }
                 },
                 label = { Text(stringResource(R.string.enter_rating)) },
-                isError = moviesViewModel.floatNotEmpty(rating)
+                isError = moviesViewModel.floatNotEmpty(moviesViewModel.rating.value)
             )
 
             Button(
-                enabled = isEnabledSaveButton, //TODO: Disable as long as input is wrong
-                onClick = { moviesViewModel.addMovie(title, year, genres, director, actors, plot, rating) }) {
+                enabled = moviesViewModel.isEnabledSaveButton.value, //TODO: Disable as long as input is wrong
+                onClick = {
+                    val genreList: MutableList<Genre> = mutableListOf()
+                    genreItems.filter { it.isSelected }.forEach { genreList.add(Genre.valueOf(it.title)) }
+
+                    moviesViewModel.addMovie(
+                        moviesViewModel.title.value,
+                        moviesViewModel.year.value,
+                        genreList,
+                        moviesViewModel.director.value,
+                        moviesViewModel.actors.value,
+                        moviesViewModel.plot.value,
+                        moviesViewModel.rating.value
+                    )
+                }) {
                 Text(text = stringResource(R.string.add))
             }
         }
