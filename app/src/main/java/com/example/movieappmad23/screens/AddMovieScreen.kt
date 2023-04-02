@@ -1,6 +1,5 @@
 package com.example.movieappmad23.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -11,11 +10,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.movieappmad23.R
 import com.example.movieappmad23.models.Genre
@@ -40,6 +40,7 @@ fun AddMovieScreen(
     ) { padding ->
         MainContent(Modifier.padding(padding), moviesViewModel = moviesViewModel)
     }
+    moviesViewModel.initValidate()
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -71,22 +72,18 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 )
             }
 
-            OutlinedTextField(
-                value = moviesViewModel.title.value,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = { moviesViewModel.title.value = it },
-                label = { Text(stringResource(R.string.enter_movie_title)) },
-                isError = moviesViewModel.stringNotEmpty(moviesViewModel.title.value)
+            TextInputField(
+                text = moviesViewModel.title,
+                errorState = moviesViewModel.titleError,
+                label = R.string.enter_movie_title,
+                validateMethod = {moviesViewModel.validateTitle()}
             )
 
-            OutlinedTextField(
-                value = moviesViewModel.year.value,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = { moviesViewModel.year.value = it },
-                label = { Text(stringResource(R.string.enter_movie_year)) },
-                isError = moviesViewModel.stringNotEmpty(moviesViewModel.year.value)
+            TextInputField(
+                text = moviesViewModel.year,
+                errorState = moviesViewModel.yearError,
+                label = R.string.enter_movie_year,
+                validateMethod = {moviesViewModel.validateYear()}
             )
 
             Text(
@@ -122,51 +119,36 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 }
             }
 
-            OutlinedTextField(
-                value = moviesViewModel.director.value,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = { moviesViewModel.director.value = it },
-                label = { Text(stringResource(R.string.enter_director)) },
-                isError = moviesViewModel.stringNotEmpty(moviesViewModel.director.value)
+            TextInputField(
+                text = moviesViewModel.director,
+                errorState = moviesViewModel.directorError,
+                label = R.string.enter_director,
+                validateMethod = {moviesViewModel.validateDirector()}
             )
 
-            OutlinedTextField(
-                value = moviesViewModel.actors.value,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = { moviesViewModel.actors.value = it },
-                label = { Text(stringResource(R.string.enter_actors)) },
-                isError = moviesViewModel.stringNotEmpty(moviesViewModel.actors.value)
+            TextInputField(
+                text = moviesViewModel.actors,
+                errorState = moviesViewModel.actorsError,
+                label = R.string.enter_actors,
+                validateMethod = {moviesViewModel.validateActors()}
             )
 
-            OutlinedTextField(
-                value = moviesViewModel.plot.value,
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp),
-                onValueChange = { moviesViewModel.plot.value = it },
-                label = { Text(textAlign = TextAlign.Start, text = stringResource(R.string.enter_plot)) },
-                isError = moviesViewModel.stringNotEmpty(moviesViewModel.plot.value)
+            TextInputField(
+                text = moviesViewModel.plot,
+                errorState = moviesViewModel.plotError,
+                label = R.string.enter_plot,
+                validateMethod = {moviesViewModel.validatePlot()}
             )
 
-            OutlinedTextField(
-                value = moviesViewModel.rating.value,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = {
-                            moviesViewModel.rating.value = if(it.startsWith("0")) {
-                                    ""
-                                } else {
-                                    it
-                                }
-                },
-                label = { Text(stringResource(R.string.enter_rating)) },
-                isError = moviesViewModel.floatNotEmpty(moviesViewModel.rating.value)
+            TextInputField(
+                moviesViewModel.rating,
+                moviesViewModel.ratingError,
+                R.string.enter_rating,
+                validateMethod = {moviesViewModel.validateRating()}
             )
 
             Button(
-                enabled = moviesViewModel.isEnabledSaveButton.value, //TODO: Disable as long as input is wrong
+                enabled = moviesViewModel.isEnabledAddButton.value,
                 onClick = {
                     val genreList: MutableList<Genre> = mutableListOf()
                     genreItems.filter { it.isSelected }.forEach { genreList.add(Genre.valueOf(it.title)) }
@@ -188,6 +170,33 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
 }
 
 @Composable
-fun displayLabelText(errorState: Boolean, successTxt: String) {
-    if (errorState) Text(stringResource(R.string.wrong_input)) else Text(successTxt)
+private fun TextInputField(
+    text: MutableState<String>,
+    errorState: MutableState<Boolean>,
+    label: Int,
+    validateMethod: () -> Unit
+) {
+    OutlinedTextField(
+        value = text.value,
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        onValueChange = {
+            text.value = it
+            validateMethod()
+        },
+        label = { Text(stringResource(id = label)) },
+        isError = errorState.value
+    )
+    DisplayErrorMsg(value = errorState.value)
+}
+
+@Composable
+private fun DisplayErrorMsg(value: Boolean) {
+    if (value) {
+        Text(
+            text = stringResource(R.string.wrong_input),
+            fontSize = 12.sp,
+            color = Color.Red
+        )
+    }
 }

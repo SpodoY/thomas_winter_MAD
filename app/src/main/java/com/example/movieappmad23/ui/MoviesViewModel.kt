@@ -1,15 +1,14 @@
 package com.example.movieappmad23.ui
 
+import android.util.Log
 import androidx.compose.runtime.*
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.ViewModel
-import com.example.movieappmad23.R
 import com.example.movieappmad23.data.Movie
 import com.example.movieappmad23.data.getMovies
 import com.example.movieappmad23.models.Genre
-import com.example.movieappmad23.models.ListItemSelectable
-
 class MoviesViewModel : ViewModel() {
+
+    private val TAG = "ViewModel"
 
     private val _allMovies = getMovies().toMutableStateList()
     val allMovies: List<Movie>
@@ -19,13 +18,27 @@ class MoviesViewModel : ViewModel() {
     val favoriteMovies: List<Movie>
         get() = _favoriteMovies
 
-    var title = mutableStateOf("")
-    val year =  mutableStateOf("")
-    var director = mutableStateOf("")
-    var actors = mutableStateOf("")
-    var plot = mutableStateOf("")
-    var rating = mutableStateOf("")
-    var isEnabledSaveButton = mutableStateOf(true)
+    var addMovie: Movie = Movie("", "", "", listOf(), "", "", "", listOf(), 0.0f)
+
+    var title = mutableStateOf(addMovie.title)
+    var titleError: MutableState<Boolean> = mutableStateOf(false)
+
+    val year =  mutableStateOf(addMovie.year)
+    var yearError: MutableState<Boolean> = mutableStateOf(false)
+
+    var director = mutableStateOf(addMovie.director)
+    var directorError: MutableState<Boolean> = mutableStateOf(false)
+
+    var actors = mutableStateOf(addMovie.actors)
+    var actorsError: MutableState<Boolean> = mutableStateOf(false)
+
+    var plot = mutableStateOf(addMovie.plot)
+    var plotError: MutableState<Boolean> = mutableStateOf(false)
+
+    var rating = mutableStateOf(addMovie.rating.toString().replace("0.0", ""))
+    var ratingError: MutableState<Boolean> = mutableStateOf(false)
+
+    var isEnabledAddButton: MutableState<Boolean> = mutableStateOf(false)
 
     fun toggleFavorite(movie: Movie) {
         _allMovies.find { it.id == movie.id }?.let { task ->
@@ -62,16 +75,64 @@ class MoviesViewModel : ViewModel() {
 
     }
 
-    fun stringNotEmpty(item: String): Boolean {
-        return item.isEmpty()
+    private fun shouldEnableAddButton() {
+        isEnabledAddButton.value =
+            (titleError.value.not()
+                    && yearError.value.not()
+                    && directorError.value.not()
+                    && actorsError.value.not()
+                    && plotError.value.not()
+                    && ratingError.value.not())
     }
 
-    fun floatNotEmpty(item: String): Boolean {
-        item.toFloatOrNull() ?: return item.isEmpty()
-        return item.isEmpty()
+    fun initValidate() {
+        validateTitle()
+        validateYear()
+        validateDirector()
+        validateActors()
+        validatePlot()
+        validateRating()
     }
 
-    fun <T> listNotEmpty(items: List<T>): Boolean {
-        return items.isEmpty()
+    fun validateTitle() {
+        titleError.value = title.value.isEmpty()
+//        Log.d(TAG, "TitleError: ${titleError.value}") //For Debugging
+        shouldEnableAddButton()
+    }
+
+    fun validateYear() {
+        yearError.value = year.value.isEmpty()
+//        Log.d(TAG, "YearError: ${yearError.value}") //For Debugging
+        shouldEnableAddButton()
+    }
+
+    fun validateDirector() {
+        directorError.value = director.value.isEmpty()
+//        Log.d(TAG, "DirectorError: ${directorError.value}") //For Debugging
+        shouldEnableAddButton()
+    }
+
+    fun validateActors() {
+        actorsError.value = actors.value.isEmpty()
+//        Log.d(TAG, "ActorsError: ${actorsError.value}") //For Debugging
+        shouldEnableAddButton()
+    }
+
+    fun validatePlot() {
+        plotError.value = plot.value.isEmpty()
+//        Log.d(TAG, "PlotError: ${plotError.value}") //For Debugging
+        shouldEnableAddButton()
+    }
+
+    fun validateRating() {
+        try {
+            rating.value.toFloat()
+            ratingError.value = false
+        } catch (e: java.lang.Exception) {
+            ratingError.value = true
+        } finally {
+//            Log.d(TAG, "RatingError: ${ratingError.value}") //For Debugging
+            shouldEnableAddButton()
+        }
     }
 }
