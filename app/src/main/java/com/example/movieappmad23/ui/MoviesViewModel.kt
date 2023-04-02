@@ -1,14 +1,13 @@
 package com.example.movieappmad23.ui
 
-import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import com.example.movieappmad23.data.Movie
 import com.example.movieappmad23.data.getMovies
 import com.example.movieappmad23.models.Genre
-class MoviesViewModel : ViewModel() {
+import com.example.movieappmad23.models.ListItemSelectable
 
-    private val TAG = "ViewModel"
+class MoviesViewModel : ViewModel() {
 
     private val _allMovies = getMovies().toMutableStateList()
     val allMovies: List<Movie>
@@ -18,12 +17,12 @@ class MoviesViewModel : ViewModel() {
     val favoriteMovies: List<Movie>
         get() = _favoriteMovies
 
-    var addMovie: Movie = Movie("", "", "", listOf(), "", "", "", listOf(), 0.0f)
+    private var addMovie: Movie = Movie("", "", "", listOf(), "", "", "", listOf(), 0.0f)
 
     var title = mutableStateOf(addMovie.title)
     var titleError: MutableState<Boolean> = mutableStateOf(false)
 
-    val year =  mutableStateOf(addMovie.year)
+    val year = mutableStateOf(addMovie.year)
     var yearError: MutableState<Boolean> = mutableStateOf(false)
 
     var director = mutableStateOf(addMovie.director)
@@ -40,6 +39,16 @@ class MoviesViewModel : ViewModel() {
 
     var isEnabledAddButton: MutableState<Boolean> = mutableStateOf(false)
 
+    var genreItems = mutableStateOf(
+        Genre.values().map { genre ->
+            ListItemSelectable(
+                title = genre.toString(),
+                isSelected = false
+            )
+        }
+    )
+    var genreError: MutableState<Boolean> = mutableStateOf(false)
+
     fun toggleFavorite(movie: Movie) {
         _allMovies.find { it.id == movie.id }?.let { task ->
             task.isFavorite = !task.isFavorite
@@ -50,6 +59,7 @@ class MoviesViewModel : ViewModel() {
             }
         }
     }
+
     fun addMovie(
         title: String,
         year: String,
@@ -60,7 +70,7 @@ class MoviesViewModel : ViewModel() {
         rating: String
     ) {
         val newMovie = Movie(
-            id = "tt00 + $title + $year",
+            id = "$title + $year + $genres",
             title = title,
             year = year,
             genre = genres,
@@ -82,7 +92,9 @@ class MoviesViewModel : ViewModel() {
                     && directorError.value.not()
                     && actorsError.value.not()
                     && plotError.value.not()
-                    && ratingError.value.not())
+                    && ratingError.value.not()
+                    && genreError.value.not()
+                    )
     }
 
     fun initValidate() {
@@ -92,6 +104,7 @@ class MoviesViewModel : ViewModel() {
         validateActors()
         validatePlot()
         validateRating()
+        validateGenres()
     }
 
     fun validateTitle() {
@@ -134,5 +147,16 @@ class MoviesViewModel : ViewModel() {
 //            Log.d(TAG, "RatingError: ${ratingError.value}") //For Debugging
             shouldEnableAddButton()
         }
+    }
+
+    fun validateGenres() {
+        genreError.value = true
+        genreItems.value.forEach genres@{
+            if (it.isSelected) {
+                genreError.value = false
+                return@genres
+            }
+        }
+        shouldEnableAddButton()
     }
 }

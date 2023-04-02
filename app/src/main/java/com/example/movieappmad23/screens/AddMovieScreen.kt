@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.movieappmad23.R
 import com.example.movieappmad23.models.Genre
-import com.example.movieappmad23.models.ListItemSelectable
 import com.example.movieappmad23.ui.MoviesViewModel
 import com.example.movieappmad23.widgets.SimpleTopAppBar
 
@@ -60,18 +59,6 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
             horizontalAlignment = Alignment.Start
         ) {
 
-            val genres = Genre.values().toList()
-            var genreItems by remember {
-                mutableStateOf(
-                    genres.map { genre ->
-                        ListItemSelectable(
-                            title = genre.toString(),
-                            isSelected = false
-                        )
-                    }
-                )
-            }
-
             TextInputField(
                 text = moviesViewModel.title,
                 errorState = moviesViewModel.titleError,
@@ -92,10 +79,12 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.h6)
 
+            DisplayErrorMsg(value = moviesViewModel.genreError.value)
+
             LazyHorizontalGrid(
                 modifier = Modifier.height(100.dp),
                 rows = GridCells.Fixed(3)){
-                items(genreItems) { genreItem ->
+                items(moviesViewModel.genreItems.value) { genreItem ->
                     Chip(
                         modifier = Modifier.padding(2.dp),
                         colors = ChipDefaults.chipColors(
@@ -105,13 +94,14 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                                 colorResource(id = R.color.white)
                         ),
                         onClick = {
-                            genreItems = genreItems.map {
+                            moviesViewModel.genreItems.value = moviesViewModel.genreItems.value.map {
                                 if (it.title == genreItem.title) {
                                     genreItem.copy(isSelected = !genreItem.isSelected)
                                 } else {
                                     it
                                 }
                             }
+                            moviesViewModel.validateGenres()
                         }
                     ) {
                         Text(text = genreItem.title)
@@ -151,7 +141,7 @@ fun MainContent(modifier: Modifier = Modifier, moviesViewModel: MoviesViewModel)
                 enabled = moviesViewModel.isEnabledAddButton.value,
                 onClick = {
                     val genreList: MutableList<Genre> = mutableListOf()
-                    genreItems.filter { it.isSelected }.forEach { genreList.add(Genre.valueOf(it.title)) }
+                    moviesViewModel.genreItems.value.filter { it.isSelected }.forEach { genreList.add(Genre.valueOf(it.title)) }
 
                     moviesViewModel.addMovie(
                         moviesViewModel.title.value,
