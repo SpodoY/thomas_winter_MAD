@@ -34,17 +34,17 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.example.movieappmad23.R
 import com.example.movieappmad23.models.Movie
-import com.example.movieappmad23.models.getMovies
 import com.example.movieappmad23.ui.theme.Shapes
 
 @Preview
 @Composable
 fun MovieRow(
-    movie: Movie = getMovies()[0],
+    movie: Movie = Movie(),
     modifier: Modifier = Modifier,
     onMovieRowClick: (String) -> Unit = {},
     onFavClick: (Movie) -> Unit = {}
 ) {
+
     Card(modifier = modifier
         .clickable {
             onMovieRowClick(movie.id)
@@ -92,6 +92,9 @@ fun MovieImage(imageUrl: String) {
 
 @Composable
 fun FavoriteIcon(movie: Movie, onFavClick: (Movie) -> Unit) {
+
+    var isLiked by remember { mutableStateOf(movie.isFavorite) }
+
     Box(modifier = Modifier
         .fillMaxSize()
         .padding(10.dp),
@@ -100,7 +103,7 @@ fun FavoriteIcon(movie: Movie, onFavClick: (Movie) -> Unit) {
         Icon(
             tint = MaterialTheme.colors.secondary,
             imageVector =
-            if(movie.isFavorite) {
+            if (isLiked) {
                 Icons.Default.Favorite
             } else {
                 Icons.Default.FavoriteBorder
@@ -108,6 +111,7 @@ fun FavoriteIcon(movie: Movie, onFavClick: (Movie) -> Unit) {
             contentDescription = "Add to favorites",
             modifier = Modifier.clickable {
                 onFavClick(movie)
+                isLiked = !isLiked
             }
         )
     }

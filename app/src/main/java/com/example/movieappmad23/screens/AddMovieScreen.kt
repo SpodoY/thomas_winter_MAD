@@ -21,6 +21,7 @@ import com.example.movieappmad23.R
 import com.example.movieappmad23.viewmodels.MoviesViewModel
 import com.example.movieappmad23.widgets.SimpleTextField
 import com.example.movieappmad23.widgets.SimpleTopAppBar
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddMovieScreen(
@@ -64,8 +65,10 @@ fun MainContent(
             movieUiState = moviesViewModel.movieUiState,
             onMovieValueChange = { newUiState, event -> moviesViewModel.updateUIState(newUiState, event)},
             onSaveClick = {
-                moviesViewModel.saveMovie()
-                navController.navigate(Screen.MainScreen.route)
+                coroutineScope.launch {
+                    moviesViewModel.saveMovie()
+                    navController.navigate(Screen.MainScreen.route)
+                }
             }
         )
     }

@@ -1,24 +1,23 @@
 package com.example.movieappmad23.models
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.util.*
 
-class Movie(
-    val id: String = UUID.randomUUID().toString(),
-    val title: String = "",
-    val year: String = "",
-    val genre: List<Genre> = listOf(),
-    val director: String = "",
-    val actors: String = "",
-    val plot: String = "No plot available",
-    val images: List<String> = listOf(),
-    val rating: Double = 0.0,
-    initialIsFavorite: Boolean = false
-) {
-    var isFavorite by mutableStateOf(initialIsFavorite)
-}
+@Entity(tableName = "movie")
+
+data class Movie(
+    @PrimaryKey var id: String = UUID.randomUUID().toString(),
+    var title: String = "",
+    var year: String = "",
+    var genre: List<Genre> = listOf(),
+    var director: String = "",
+    var actors: String = "",
+    var plot: String = "No plot available",
+    var images: List<String> = listOf(),
+    var rating: Double = 0.0,
+    var isFavorite: Boolean = false
+)
 
 fun getMovies(): List<Movie> {
     return listOf(
