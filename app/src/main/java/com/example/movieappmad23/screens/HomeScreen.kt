@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.movieappmad23.viewmodels.MoviesViewModel
+import com.example.movieappmad23.viewmodels.HomeViewModel
 import com.example.movieappmad23.widgets.HomeTopAppBar
 import com.example.movieappmad23.widgets.MovieRow
 import kotlinx.coroutines.launch
@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     navController: NavController = rememberNavController(),
-    moviesViewModel: MoviesViewModel
+    homeViewModel: HomeViewModel
 ){
     Scaffold(topBar = {
         HomeTopAppBar(
@@ -54,7 +54,7 @@ fun HomeScreen(
         MainContent(
             modifier = Modifier.padding(padding),
             navController = navController,
-            viewModel = moviesViewModel
+            viewModel = homeViewModel
         )
     }
 }
@@ -63,7 +63,7 @@ fun HomeScreen(
 fun MainContent(
     modifier: Modifier,
     navController: NavController,
-    viewModel: MoviesViewModel
+    viewModel: HomeViewModel
 ) {
     MovieList(
         modifier = modifier,
@@ -76,7 +76,7 @@ fun MainContent(
 fun MovieList(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: MoviesViewModel
+    viewModel: HomeViewModel
 ) {
     val movieListState by viewModel.movieListState.collectAsState()
     val coroutineScope = rememberCoroutineScope()

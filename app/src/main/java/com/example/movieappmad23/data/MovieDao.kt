@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
-
     @Insert
     suspend fun add(movie: Movie)
 
