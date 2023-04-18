@@ -17,9 +17,7 @@ class FavoritesViewModel(private val movieRepository: MovieRepository): ViewMode
     init {
         viewModelScope.launch {
             movieRepository.getFavoriteMovies().collect() { favoriteList ->
-                if (favoriteList.isNotEmpty()) {
                     _favoriteMovies.value = favoriteList
-                }
             }
         }
     }

@@ -27,8 +27,7 @@ fun Navigation() {
         LocalContext.current))
 
     val addMoviesViewModel: AddScreenViewModel = viewModel(factory = InjectorUtils.provideAddMovieScreenViewModelFactory(
-        LocalContext.current
-    ))
+        LocalContext.current))
 
     NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
         composable(route = Screen.MainScreen.route){

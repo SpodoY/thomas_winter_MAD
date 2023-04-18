@@ -93,17 +93,15 @@ fun MovieImage(imageUrl: String) {
 @Composable
 fun FavoriteIcon(movie: Movie, onFavClick: (Movie) -> Unit) {
 
-    var isLiked by remember { mutableStateOf(movie.isFavorite) }
-
     Box(modifier = Modifier
         .fillMaxSize()
         .padding(10.dp),
         contentAlignment = Alignment.TopEnd
     ){
         Icon(
-            tint = MaterialTheme.colors.secondary,
+            tint = MaterialTheme.colors.error,
             imageVector =
-            if (isLiked) {
+            if (movie.isFavorite) {
                 Icons.Default.Favorite
             } else {
                 Icons.Default.FavoriteBorder
@@ -111,7 +109,6 @@ fun FavoriteIcon(movie: Movie, onFavClick: (Movie) -> Unit) {
             contentDescription = "Add to favorites",
             modifier = Modifier.clickable {
                 onFavClick(movie)
-                isLiked = !isLiked
             }
         )
     }
